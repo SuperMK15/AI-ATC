@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 const TextToSpeech = ({ text }: { text: string }) => {
-    const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
     const [pitch, setPitch] = useState(1.5);
     const [rate, setRate] = useState(1.5);
     const [volume, setVolume] = useState(1);
@@ -11,10 +10,8 @@ const TextToSpeech = ({ text }: { text: string }) => {
         const u: SpeechSynthesisUtterance = new SpeechSynthesisUtterance(text);
         const voices: SpeechSynthesisVoice[] = synth.getVoices();
 
-        setVoice(voices[3]);
-
         if (u) {
-            u.voice = voice;
+            u.voice = voices[3];
             u.pitch = pitch;
             u.rate = rate;
             u.volume = volume;
