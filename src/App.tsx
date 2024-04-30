@@ -32,7 +32,7 @@ function App() {
   useEffect(() => {
     const setupCohere = async () => {
       try {
-        console.log("Generating result...");
+        // console.log("Generating result...");
         const res = await cohere.chat({
           message:
             "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
@@ -50,7 +50,7 @@ function App() {
           chatHistory: [],
           maxTokens: 10,
         })
-        console.log("Result:", res);
+        // console.log("Result:", res);
         setResponseFromAI(res.text);
         if(res.chatHistory) setAIChatHistory(res.chatHistory);
         setDoneLoadingAIConfig(true);
@@ -75,16 +75,16 @@ function App() {
 
   useEffect(() => {
     const getAIGeneration = async () => {
-      console.log ("AI Chat History:", AIChatHistory);
+      // console.log ("AI Chat History:", AIChatHistory);
       try {
-        console.log("Generating result...");
+        // console.log("Generating result...");
         const res = await cohere.chat({
           message: recording,
           connectors:[{"id": "web-search"}], 
           chatHistory: AIChatHistory ? AIChatHistory : [],
           maxTokens: 100,
         })
-        console.log("Result:", res);
+        // console.log("Result:", res);
         setResponseFromAI(res.text);
         setSendRecordingToAI(false);
         if(res.chatHistory) setAIChatHistory(res.chatHistory);
@@ -94,7 +94,7 @@ function App() {
     }
 
     if (sendRecordingToAI) {
-      console.log('Recording:', recording);
+      // console.log('Recording:', recording);
       getAIGeneration();
     }
   }, [sendRecordingToAI, recording, responseFromAI]);
