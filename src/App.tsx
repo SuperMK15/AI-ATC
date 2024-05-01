@@ -6,6 +6,7 @@ import { ChatMessage } from 'cohere-ai/api/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import SyncLoader from "react-spinners/SyncLoader";
+import { set } from 'cohere-ai/core/schemas/index';
 
 function App() {
   const {
@@ -85,7 +86,9 @@ function App() {
           maxTokens: 100,
         })
         // console.log("Result:", res);
-        setResponseFromAI(res.text);
+        if (res.text == responseFromAI) setResponseFromAI(res.text+" ");
+        else setResponseFromAI(res.text);
+        
         setSendRecordingToAI(false);
         if(res.chatHistory) setAIChatHistory(res.chatHistory);
       } catch (error) {
