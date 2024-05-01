@@ -6,7 +6,6 @@ import { ChatMessage } from 'cohere-ai/api/index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import SyncLoader from "react-spinners/SyncLoader";
-import { set } from 'cohere-ai/core/schemas/index';
 
 function App() {
   const {
@@ -44,16 +43,32 @@ function App() {
             aircraftCode +
             ".\n" +
             "The scenario is as follows: " +
-            scenario+
-            "Respond with \"This is" + towerName + ", up and active.\" if you are ready to begin.",
-          connectors:[{"id": "web-search"}], 
+            scenario +
+            "\n. Respond with \"This is" + towerName + ", up and active.\" if you are ready to begin.",
+          preamble:
+            "## Task & Context\n" +
+            "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
+            "Your Tower Name Is: " +
+            towerName +
+            ".\n" +
+            "The aircraft you will be communicating with is: " +
+            aircraftCode +
+            ".\n" +
+            "The scenario is as follows: " +
+            scenario +
+            "\n." +
+            "\n## Style Guide\n" +
+            "Whenever you give numbers (Ex. runway number, winds, etc.) you should give the number in words. For example, runway 27 should be said as runway two seven, and 270 should be said as two seven zero.\n" +
+            "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
+            "I have connected you to the internet to help you with your responses. Please use this tool responsibly.",
+          connectors: [{ "id": "web-search" }],
           conversationId: 'atc-ai',
           chatHistory: [],
           maxTokens: 10,
         })
         // console.log("Result:", res);
         setResponseFromAI(res.text);
-        if(res.chatHistory) setAIChatHistory(res.chatHistory);
+        if (res.chatHistory) setAIChatHistory(res.chatHistory);
         setDoneLoadingAIConfig(true);
       } catch (error) {
         console.error("Error fetching result:", error)
@@ -81,16 +96,32 @@ function App() {
         // console.log("Generating result...");
         const res = await cohere.chat({
           message: recording,
-          connectors:[{"id": "web-search"}], 
+          preamble:
+            "## Task & Context\n" +
+            "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
+            "Your Tower Name Is: " +
+            towerName +
+            ".\n" +
+            "The aircraft you will be communicating with is: " +
+            aircraftCode +
+            ".\n" +
+            "The scenario is as follows: " +
+            scenario +
+            "\n." +
+            "\n## Style Guide\n" +
+            "Whenever you give numbers (Ex. runway number, winds, etc.) you should give the number in words. For example, runway 27 should be said as runway two seven, and 270 should be said as two seven zero.\n" +
+            "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
+            "I have connected you to the internet to help you with your responses. Please use this tool responsibly.",
+          connectors: [{ "id": "web-search" }],
           chatHistory: AIChatHistory ? AIChatHistory : [],
           maxTokens: 100,
         })
         // console.log("Result:", res);
-        if (res.text == responseFromAI) setResponseFromAI(res.text+" ");
+        if (res.text == responseFromAI) setResponseFromAI(res.text + " ");
         else setResponseFromAI(res.text);
-        
+
         setSendRecordingToAI(false);
-        if(res.chatHistory) setAIChatHistory(res.chatHistory);
+        if (res.chatHistory) setAIChatHistory(res.chatHistory);
       } catch (error) {
         console.error("Error fetching result:", error)
       }
@@ -181,26 +212,26 @@ function App() {
 
   return (
     <div className="flex flex-col">
-      <button className="absolute top-0 left-0 m-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400" onClick={() => 
-        (setGettingSetupData(true), 
+      <button className="absolute top-0 left-0 m-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-400" onClick={() =>
+      (setGettingSetupData(true),
         resetTranscript(),
         SpeechRecognition.stopListening(),
-        setLoadingAIConfig(false), 
-        setDoneLoadingAIConfig(false), 
+        setLoadingAIConfig(false),
+        setDoneLoadingAIConfig(false),
         setAIChatHistory([] as ChatMessage[]),
         setSendRecordingToAI(false),
         setRecording(''),
         setResponseFromAI('')
-        )}>
+      )}>
         <FontAwesomeIcon icon={faArrowLeft} className="mr-2" /> Back
       </button>
       <div className="flex items-center justify-center bg-gray-900 text-white ">
         <div className='flex flex-col items-center justify-center min-h-screen w-1/2 py-2 px-20 border-r-4 border-cyan-500'>
           <p className="text-2xl font-bold mb-5">Aircraft {aircraftCode}: {listening ? <span className='text-green'>mic on</span> : <span>mic off</span>}</p>
           {listening ?
-            <button 
+            <button
               className="bg-red-700 text-white px-4 py-2 rounded-md m-1 hover:bg-red-500 w-1/2 disabled:opacity-50"
-              disabled={!transcript} 
+              disabled={!transcript}
               onClick={() => (SpeechRecognition.stopListening())}>Complete Tranmission</button> :
             <button className="bg-blue-700 text-white px-4 py-2 rounded-md m-1 hover:bg-blue-500 w-1/2" onClick={() => SpeechRecognition.startListening({ continuous: true, language: 'en-CA' })}>Begin Transmission</button>
           }
@@ -211,7 +242,7 @@ function App() {
           <h1 className='text-4xl font-bold mb-5'>{towerName}</h1>
           <TextToSpeech text={responseFromAI} />
           {sendRecordingToAI ?
-            <><br/><SyncLoader color="#ffffff" loading={true} size={15} /></> :
+            <><br /><SyncLoader color="#ffffff" loading={true} size={15} /></> :
             <p className='mt-4 text-lg text-center'>{responseFromAI}</p>}
         </div>
       </div>
