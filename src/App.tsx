@@ -101,16 +101,6 @@ function App() {
 
   useEffect(() => {
     // force the browser to speak the response from AI
-    /*if (responseFromAI) {
-      const synth: SpeechSynthesis = window.speechSynthesis;
-      const u: SpeechSynthesisUtterance = new SpeechSynthesisUtterance(responseFromAI);
-      const voices: SpeechSynthesisVoice[] = synth.getVoices();
-      u.voice = voices[3];
-      u.pitch = 1;
-      u.rate = 1;
-      u.volume = 1;
-      synth.speak(u);
-    }*/
   }, [responseFromAI]);
 
   if (gettingSetupData) {
@@ -179,7 +169,11 @@ function App() {
   }
 
   if (!browserSupportsSpeechRecognition) {
-    return <span className="text-gray-300">Browser doesn't support speech recognition.</span>;
+    return (
+      <div className="flex items-center justify-center bg-gray-900 text-white min-h-screen">
+        <p className="text-gray-300 text-2xl">Browser doesn't support speech recognition.</p>
+      </div>
+    );
   }
 
   return (
