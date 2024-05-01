@@ -62,7 +62,7 @@ function App() {
             "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
             "I have connected you to the internet to help you with your responses. Please use this tool responsibly.",
           connectors: [{ "id": "web-search" }],
-          conversationId: 'atc-ai',
+          temperature: 0.15,
           chatHistory: [],
           maxTokens: 10,
         })
@@ -113,8 +113,9 @@ function App() {
             "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
             "I have connected you to the internet to help you with your responses. Please use this tool responsibly.",
           connectors: [{ "id": "web-search" }],
+          temperature: 0.15,
           chatHistory: AIChatHistory ? AIChatHistory : [],
-          maxTokens: 100,
+          maxTokens: 200,
         })
         // console.log("Result:", res);
         if (res.text == responseFromAI) setResponseFromAI(res.text + " ");
