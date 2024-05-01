@@ -106,7 +106,7 @@ function App() {
   if (gettingSetupData) {
     return (
       <div className="flex items-center justify-center bg-gray-900 text-white min-h-screen">
-        <div className="flex flex-col items-center justify-center w-2/5">
+        <div className="flex flex-col items-center justify-center">
           <form className="bg-gray-800 p-8 rounded-md text-center w-full">
             <h1 className="text-3xl font-bold mb-6">Welcome to ATC.AI!</h1>
 
