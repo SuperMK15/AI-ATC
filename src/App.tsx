@@ -29,57 +29,53 @@ function App() {
   const [recording, setRecording] = useState('');
   const [responseFromAI, setResponseFromAI] = useState('');
 
-  useEffect(() => {
-    const setupCohere = async () => {
-      try {
-        // console.log("Generating result...");
-        const res = await cohere.chat({
-          message:
-            "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
-            "Your Tower Name Is: " +
-            towerName +
-            ".\n" +
-            "The aircraft you will be communicating with is: " +
-            aircraftCode +
-            ".\n" +
-            "The scenario is as follows: " +
-            scenario +
-            "\n. Respond with \"This is" + towerName + ", up and active.\" if you are ready to begin.",
-          preamble:
-            "## Task & Context\n" +
-            "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
-            "Your Tower Name Is: " +
-            towerName +
-            ".\n" +
-            "The aircraft you will be communicating with is: " +
-            aircraftCode +
-            ".\n" +
-            "The scenario is as follows: " +
-            scenario +
-            "\n." +
-            "\n## Style Guide\n" +
-            "Whenever you give numbers (Ex. runway number, winds, etc.) you should give the number in words. For example, runway 27 should be said as runway two seven, and 270 should be said as two seven zero.\n" +
-            "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
-            "I have connected you to the internet to help you with your responses. Please use this tool responsibly.",
-          connectors: [{ "id": "web-search" }],
-          temperature: 0.15,
-          chatHistory: [],
-          maxTokens: 10,
-        })
-        // console.log("Result:", res);
-        setResponseFromAI(res.text);
-        if (res.chatHistory) setAIChatHistory(res.chatHistory);
-        setDoneLoadingAIConfig(true);
-      } catch (error) {
-        console.error("Error fetching result:", error)
-      }
-    }
+  const ai_preamble =
+    "## Task & Context\n" +
+    "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
+    "Your Tower Name Is: " +
+    towerName +
+    ".\n" +
+    "The aircraft you will be communicating with is: " +
+    aircraftCode +
+    ".\n" +
+    "The scenario is as follows: " +
+    scenario +
+    "\n." +
+    "\n## Style Guide\n" +
+    "Whenever you give numbers (Ex. runway number, winds, etc.) you should give the number in words. For example, runway 27 should be said as runway two seven, and 270 should be said as two seven zero.\n" +
+    "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
+    "\n## Example Interactions\n" +
+    "Interaction 1:\n" +
+    "Pilot: Ground, Cessna 172 GHWK with information [ATIS] for [circuits, departure to the north/east/south/west]\n" +
+    "ATC: Hotel Whiskey Kilo, squawk [4 digit number], runway [number], taxi via [taxiway], hold short runway [number], contact Tower [frequency]\n" +
+    "Pilot: *will readback. If correct, ATC stays silent. If not, ATC corrects*\n";
 
-    if (!gettingSetupData && loadingAIConfig && !doneLoadingAIConfig) {
-      setupCohere();
-      setLoadingAIConfig(false);
-    }
-  }, [gettingSetupData, loadingAIConfig]);
+    useEffect(() => {
+      const setupCohere = async () => {
+        try {
+          // console.log("Generating result...");
+          const res = await cohere.chat({
+            message: "Respond with \"This is" + towerName + ", up and active.\" if you are ready to begin.",
+            preamble: ai_preamble,
+            connectors: [{ "id": "web-search" }],
+            temperature: 0.15,
+            chatHistory: [],
+            maxTokens: 10,
+          })
+          // console.log("Result:", res);
+          setResponseFromAI(res.text);
+          if (res.chatHistory) setAIChatHistory(res.chatHistory);
+          setDoneLoadingAIConfig(true);
+        } catch (error) {
+          console.error("Error fetching result:", error)
+        }
+      }
+
+      if (!gettingSetupData && loadingAIConfig && !doneLoadingAIConfig) {
+        setupCohere();
+        setLoadingAIConfig(false);
+      }
+    }, [gettingSetupData, loadingAIConfig]);
 
   useEffect(() => {
     if (!listening && !gettingSetupData && transcript) {
@@ -96,22 +92,7 @@ function App() {
         // console.log("Generating result...");
         const res = await cohere.chat({
           message: recording,
-          preamble:
-            "## Task & Context\n" +
-            "In this conversation, you will act as an ATC tower, and use appropriate diction.\n" +
-            "Your Tower Name Is: " +
-            towerName +
-            ".\n" +
-            "The aircraft you will be communicating with is: " +
-            aircraftCode +
-            ".\n" +
-            "The scenario is as follows: " +
-            scenario +
-            "\n." +
-            "\n## Style Guide\n" +
-            "Whenever you give numbers (Ex. runway number, winds, etc.) you should give the number in words. For example, runway 27 should be said as runway two seven, and 270 should be said as two seven zero.\n" +
-            "Additionally, you should use the NATO phonetic alphabet when spelling out things like aircraft identifiers and tower codes. For example, C-GABC should be given as Charlie Golf Alpha Bravo Charlie, and YYZ should be given as Yankee Yankee Zulu.\n" +
-            "I have connected you to the internet to help you with your responses. Please use this tool responsibly.",
+          preamble: ai_preamble,
           connectors: [{ "id": "web-search" }],
           temperature: 0.15,
           chatHistory: AIChatHistory ? AIChatHistory : [],
